@@ -1,0 +1,186 @@
+---
+layout:     post
+title:      "git基础"
+subtitle:   "git的简单操作"
+date:       2016-09-03
+author:     "kkopite"
+header-img: "img/post-bg-js-version.jpg"
+tags:
+    - git
+    - 学习
+---
+
+# git
+
+
+## 基础部分
+
+1. `git init `: 建仓库
+2. `git add <file>` 添加文件,可以多次添加多个文件(git add . 添加所有)
+3. `git commit -m "该次提交后的描述" `   （git add 后要提交）
+4. `git status`   检查是否有修改,需要提交
+5. `git diff `    显示所有修改的地方,也可指定值看一个文本修改的地方
+6. `git log `     显示所有提交的内容(如果reset到前面的版本,当前的commit是看不到的,用reflog可以看)
+7. `git reset --hard HEAD^`    返回上一个版本(HEAD^^ 上上个版本,HEAD~100 上第一百个版本)
+8. `git reflog`   显示所有的commit和reset,commit前面的数字为16进制的 
+```
+$ git reflog
+7923836 HEAD@{0}: reset: moving to 79238367
+33f99bf HEAD@{1}: reset: moving to HEAD^
+7923836 HEAD@{2}: commit: append GPL
+33f99bf HEAD@{3}: commit: add distributed
+ea1fd43 HEAD@{4}: commit (initial): wrote a readme file
+```
+如果reset到前一个版本,后悔了,想要回来,只要找到要回来的版本commit前面的数字,假如是7923836
+
+```
+$ git reset --hard 79238367
+HEAD is now at 7923836 append GPL
+```
+### 小结
+* `HEAD`指向版本的当前版本,git允许在各版本来回穿梭,使用`git reset --hard commit_id`
+* 穿梭到过去,可以先用`git log`查看提交历史,看要回去哪个版本
+* 要重返未来,可以用`git reflog`查看命令历史,看要回到未来哪一个版本
+
+
+### stage(暂存区)
+
+`git add`将修改的文本先交到stage中,然后在通过`git commit -m ""`将所有暂存区的东西提交到分支上
+
+### 撤销修改
+有时候一不小小写了一些不靠谱的东西,然后add到暂存区,可以用一下两种解决
+`git checkout -- <file>`
+`git reset HEAD <file>`
+都表示把暂存区的修改撤销,返回工作区
+
+* 场景1：当你改乱了工作区某个文件的内容，想直接丢弃工作区的修改时，用命令git checkout -- file。
+
+* 场景2：当你不但改乱了工作区某个文件的内容，还添加到了暂存区时，想丢弃修改，分两步，第一步用命令git reset HEAD file，就回到了场景1，第二步按场景1操作。
+
+* 场景3：已经提交了不合适的修改到版本库时，想要撤销本次提交，参考版本回退一节，不过前提是没有推送到远程库。(救不了了,记录在上面了)
+
+### 删除文件
+`git rm <file>`用于删除文件
+`git checkout --<file>` 将误删文件恢复到最新版本,其实是用版本库的版本替代工作区的版本,但会丢失文件最近一次提交后修改的内容
+
+### 添加到远程库
+1. 建仓
+2. `git remote add origin git@github.com:action-hong/learngit.git` 本地于远程库关联,origin后面的地址可以在github的具体仓库看到
+3. `git push -u origin master`,关联后,第一推送master分支的所有内容
+4. 此后,每次本地`git commit`之后,如果想提交到远程库,只需`git push origin master`
+
+### 远程库克隆到本地
+1. github建仓,勾选`Initialize this repository with a README`,帮我们创建一个README.md文件
+2. `git clone git@github.com:action-hong/gitskills.git` 克隆到本地文件(地址也可是是用https//协议的,但是速度慢,而且每次提交都要输密码,还是默认的协议好用)
+
+### 创建于合并分支
+1. 查看分支:`git branch`
+2. 创建分支:`git branch <name> `
+3. 切换分支:`git checkout <name>`
+4. 创建加切换分支:`git checkout -b <name>`
+5. 合并某分支到当前分支:`git merge <name>`  (看不到合并的信息记录)
+6. 删除分支:`git branch -d <name>`
+7. 禁用快速合并 `git merge --no-ff -m"description" <name>` (可以看合并的信息)
+>如果当前是在dev分支中,修改了内容,并且commit之后,再返回master分支时,工作区会回到master最新的版本,也就是说之前修改的内容不会出现在master中,在master分支中执行`git merge dev`将将两分支合并,则之前修改的内容就会出现在master分支中了
+
+>又如果说在dev分支时,修改内容,但没有进行commit,返回分支master,则之前修改的内容还存在,可能是因为这坨修改的东西如果没有commit个某个分支的话,所有分支都看得到,而commit之后,这个修改的内容就属于某个分支了,其他的都看不到了
+
+### 解决冲突
+master分支在第一行修改东西,commit
+featurel分支也在第一行修改东西,commit
+然后在master分支中`git merge featurel`,此时会出现如下冲突
+```
+git merge featurel
+Auto-merging readme.txt
+CONFLICT (content): Merge conflict in readme.txt
+Automatic merge failed; fix conflicts and then commit the result.
+
+//查看冲突点
+$ git status
+On branch master
+Your branch is ahead of 'origin/master' by 1 commit.
+  (use "git push" to publish your local commits)
+You have unmerged paths.
+  (fix conflicts and run "git commit")
+
+Unmerged paths:
+  (use "git add <file>..." to mark resolution)
+
+        both modified:   readme.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+//打开文本可以看到具体冲突
+<<<<<<< HEAD
+Creating a new branch is quick & simple.
+=======
+Creating a new branch is quick AND simple.
+>>>>>>> featurel
+//Git用<<<<<<<，=======，>>>>>>>标记出不同分支的内容，我们修改如下后保存：
+
+//对这一段冲突进行你想要的内容,然后再add,commit
+$ git commit -m "conflict fixed"
+[master ecc7dee] conflict fixed
+
+//查看分支合并情况
+$ git log --graph --pretty=oneline --abbrev-commit
+*   ecc7dee conflict fixed
+|\
+| * 6c68ed4 AND simple
+* | afa22c7 & simple
+|/
+* ca753d6 remove test.txt
+...
+
+//最后删除分支featurel
+git branch -d featurel
+
+```
+
+### bug分支
+
+- 当你在再dev分支开发的时候，突然让你去修复master分支中的一个bug，然后此时你工作还起码要一个小时才能完成，现在还不能commit，又不能直接转移到master分支，不然此时修改的内容也会带到master去，此时可以使用`git stash`将当前工作现场保存起来，此时执行`git status`发现没有需要add的内容,说明现场清干净了,然后转移到master分支,在哪里开一个小分支issue-101,执行完毕后回到master,合并bug分支,在返回dev分支
+`git stash list`查看工作现场
+`git stash pop` 恢复工作现场,同时把list保存的工作现场删除
+`git stash apply stash@{0}` 恢复现场
+`git stash drop`删除现场
+
+### Feature分支
+
+领导让写一个小需求,于是你在dev分支上开了个新分支
+`git checkout -b feature-vulcan`
+在这个分支忙活大半天,终于把需求搞好了,
+`git checkout dev`
+转到dev准备进行merge,此时产品经理跑来说这个需求不要了
+那这个东西只好删掉了
+`git branch -d feature-valcan`
+发现删除不了,因为这分支还没有被合并,则必须使用强势删除
+`git branch -D feature-valcan`
+
+### 多人协作
+
+有一个小伙伴从github上clone了一个项目,但是只能看到master分支
+
+`git branch -b dev origin/dev`
+此时就可以有dev分支,可以在这个分支修改,提交了
+
+`git push origin dev`
+
+当同时有两个人对dev提交时,有出现冲突,此时先从github上pull下来
+`git pull origin master//将github上更新的master分析pull到本地和当前本地的分支合并`
+
+`git branch --set-upstream dev origin/dev`指定本地dev分支与origin的dev链接
+再进行`git pull`
+然后在本对其pull下来的东西和自己修改的东西合并,有冲突的话只能手动解决了
+
+- `git remove -v` 查看远程库的信息
+- 本地新建的分支如果不推送到远程，对其他人就是不可见的；
+- 从本地推送分支，使用`git push origin branch-name`，如果推送失败，先用git pull抓取远程的新提交；
+- 在本地创建和远程分支对应的分支，使用`git checkout -b branch-name origin/branch-name`，本地和远程分支的名称最好一致；
+- 建立本地分支和远程分支的关联，使用`git branch --set-upstream branch-name origin/branch-name`；
+- 从远程抓取分支，使用`git pull`，如果有冲突，要先处理冲突。
+
+
+
+
+
