@@ -1,0 +1,140 @@
+﻿---
+layout:     post
+title:      "LeeCode写点题目"
+subtitle:   "太无聊了,刷点题目"
+date:       2016-09-04
+author:     "kkopite"
+header-img: "img/tag-bg.jpg"
+tags:
+    - java
+    - 算法
+---
+
+#leecode
+
+
+
++ Longest Common Prefix(14)
+>Write a function to find the longest common prefix string amongst an array of strings.
+```
+public class Solution {
+    public String longestCommonPrefix(String[] strs) {
+        
+        //定义前缀名
+        String prefix = "";
+        
+        //数组不为空,长度大于1
+        if(strs != null && strs.length != 0){
+            
+            //初始化
+            prefix = strs[0];
+        
+            for (int i = 1; i < strs.length; i++) {
+                
+                //当前前缀是否是新的字符串前缀,前缀的长度不为0
+        	    while(strs[i].indexOf(prefix) != 0 && prefix.length() != 0){
+        	        
+        	        //前缀递减一个字符
+        		    prefix = prefix.substring(0, prefix.length()-1);
+        	    }
+        	    
+        	    //前缀长度为0时,没必要再检查后面的字符串了
+        	    if (prefix.length() == 0) {
+				    break;
+			    }
+		    }
+        }
+
+        return prefix;
+    }
+}
+```
+
++ Valid Parentheses
+>Given a string containing just the characters `'('`, `')'`, `'{'`, `'}'`, `'['` and `']'`, determine if the input string is valid.
+The brackets must close in the correct order, "()" and "()[]{}" are all valid but "(]" and "([)]" are not.
+
+```
+/**
+ * 很显然这个题目用栈来解决最合适,左括号配对右括号
+ * @author kkopite
+ *
+ */
+public class Solution {
+    public boolean isValid(String s) {
+        
+        //长度为奇数必然不配对
+		if (s.length() % 2 == 1) {
+			return false;
+		}
+		
+		//长度为0自然配对
+		if (s.length() == 0) {
+			return true;
+		}
+		
+		
+		Stack<Character> stack = new Stack<>();
+		
+		char[] arr = s.toCharArray();
+		
+		//压入第一个括号
+		stack.push(arr[0]);
+		
+		for (int i = 1; i < arr.length; i++) {
+		
+		    if (stack.isEmpty()) {
+		        
+				//当栈里没有符号时,压入一个,然后结束此次循环
+				stack.push(arr[i]);
+				continue;
+			}
+			switch (getType(stack.peek(),arr[i])) {
+			case 0:
+			    //左右符号不匹配
+				return false;
+			case 1:
+			    //两个都是左符号,压入栈
+				stack.push(arr[i]);
+				break;
+			case 2:
+			    //左右符号匹配,弹出最后一个符号
+				stack.pop();
+				break;
+			}
+		}
+		if (stack.isEmpty()) {
+			//栈为空,表示都匹配完成了
+			return true;
+		}
+		
+		return false;
+    }
+	
+	public int getType(char c1,char c2){
+		
+		//用在flag的位置来表示左右符号
+		//左符号为奇数,右符号为偶数
+		String flag = "()[]{}";
+		
+		int left = flag.indexOf(c1);
+		int right = flag.indexOf(c2);
+		
+		if ((right - left) == 1) {
+			//距离差一,说明是配对的
+			return 2;
+		}else if (right % 2 == 0 && left % 2 == 0) {
+			//两个符号都是左符号
+			return 1;
+		}else {
+			//不符合的情况
+			return 0;
+		}
+		
+	}
+}
+```
+
+
+
+
