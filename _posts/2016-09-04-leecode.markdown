@@ -1,18 +1,16 @@
 ﻿---
 layout:     post
-title:      "LeeCode写点题目"
-subtitle:   "太无聊了,刷点题目"
+title:      "Leecode"
+subtitle:   "写点题目"
 date:       2016-09-04
 author:     "kkopite"
-header-img: "img/tag-bg.jpg"
+header-img: "img/home-bg-o.jpg"
 tags:
-    - java
     - 算法
+    - java
 ---
 
 #leecode
-
-
 
 + Longest Common Prefix(14)
 >Write a function to find the longest common prefix string amongst an array of strings.
