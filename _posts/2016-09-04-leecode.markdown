@@ -118,7 +118,7 @@ public class Solution {
 		int left = flag.indexOf(c1);
 		int right = flag.indexOf(c2);
 		
-		if ((right - left) == 1) {
+		if ((right - left) == 1 && right % 2 == 1) {
 			//距离差一,说明是配对的
 			return 2;
 		}else if (right % 2 == 0 && left % 2 == 0) {

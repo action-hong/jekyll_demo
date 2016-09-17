@@ -63,6 +63,14 @@ HEAD is now at 7923836 append GPL
 `git rm <file>`用于删除文件
 `git checkout --<file>` 将误删文件恢复到最新版本,其实是用版本库的版本替代工作区的版本,但会丢失文件最近一次提交后修改的内容
 
+### 撤销某些文件的追踪
+比方说之前提交了一个text.log,现在不想要再提交这个文件了,应该这么做:
+
+1. `git rm --cache text.log`  	删除对该文件的追踪
+2. 在.gitingnore 添加 text.log 	添加忽略(这个文件只对没有提交的文件有效,所以要先之前的追踪去掉)
+
+如果是要删除一个文件的话,如test,`git rm --cache -r text`,然后在gitignore添加该文件
+
 ### 添加到远程库
 1. 建仓
 2. `git remote add origin git@github.com:action-hong/learngit.git` 本地于远程库关联,origin后面的地址可以在github的具体仓库看到
