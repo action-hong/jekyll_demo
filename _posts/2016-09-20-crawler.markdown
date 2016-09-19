@@ -1,0 +1,129 @@
+﻿---
+layout:     post
+title:      "python爬虫入门1"
+subtitle:   "写点题目"
+date:       2016-09-20
+author:     "kkopite"
+header-img: "img/home-bg-o.jpg"
+tags:
+    - python
+    - 爬虫
+---
+
+# 爬虫入门
+
+> 前段时间在知乎看到个题主[利用python爬虫解答出整届新秀参加全明星的年份][1],照着模仿写了所有球员入选全名星的次数
+
+```
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"统计历年来参加全明星的人数"
+
+from bs4 import BeautifulSoup
+from collections import defaultdict
+import requests
+import time
+
+# 字典转换成list,方便排序
+def dic2sortlist(dic):
+	sort_list = []
+	for name,count in dic.items():
+		sort_list.append((name,count))
+	return sorted(sort_list,key=lambda name:name[1],reverse=True)
+
+# url得出网站的html结构
+def url2soup(url):
+	req = requests.get(url)
+	req.encoding = 'utf-8'
+	return BeautifulSoup(req.text,"html5lib")
+
+all_star_dict = {}						# 字典,url->人名
+all_star = defaultdict(lambda:0)		# 个人参与全明星的次数
+all_star_team = defaultdict(lambda:0)	# 球队球员参与全明星的人次
+count = 0								# 历史上球员参与全明星的人次
+
+# 个人入选的次数(不计入选但因伤病没参加的次数,因为这个数据库也没有这数据)
+for year in range(1950, 1951):
+	print('-'*20,year,'-'*20)
+	# time.sleep(1)
+
+	url = "http://www.stat-nba.com/award/item12isnba1season{}.html".format(
+        year)
+
+	doc = url2soup(url)
+
+	names = doc.findAll("td",{"class":"player_name_out"})   # 找出球员名单
+
+	for name in names:
+		name_url = name.find('a').attrs['href']
+		all_star_dict[name_url] = name.text
+		all_star[name_url] = all_star[name_url] + 1		# 由于mvp会加星星,需要去掉,麻烦
+
+	count = count + len(names)
+
+# 球队的球员入选人次
+# 原始url是	"http://www.stat-nba.com/player/1862.html"
+# 访问url是	"http://www.stat-nba.com/player/stat_box/1862_allstar.html"
+for url in all_star_dict.keys():
+	print('球员:%s' % all_star_dict[url])
+	url = "http://www.stat-nba.com/player/stat_box/{}_allstar.html".format(url.split('/')[-1][:-5])
+	req = requests.get(url)
+	req.encoding = 'utf-8'
+
+	doc = BeautifulSoup(req.text,"html5lib")
+
+	lists = doc.find_all('td',class_='tm',rank=True)
+
+	for team in lists:
+		all_star_team[team.text] = all_star_team[team.text] + 1
+
+	count_1 = count_1 + len(lists)
+
+player_count = dic2sortlist(all_star)
+team_count = dic2sortlist(all_star_team)
+
+print('---------------个人入选全明星次数-------------------')
+
+for name in player_count:
+	print('%s 参与了 %s次' % (all_star_dict[name[0]],name[1]))
+
+print('---------------球队入选全明星次数-------------------')
+
+for name in team_count:
+	print('%s 队伍共有球员参与了 %s次' % (name[0],name[1]))
+
+
+print('---------------------总人次------------------')
+print(count)
+```
+
+##个人前十
+|球员|个人入选次数|
+|----|----|
+|卡里姆-贾巴尔 | 18|
+|蒂姆-邓肯 | 15|
+|科比-布莱恩特 | 15|
+|凯文-加内特 | 14|
+|威尔特-张伯伦 | 13|
+|鲍勃-库西 | 13|
+|约翰-哈福利切克 | 13|
+|德克-诺维茨基 | 13|
+|迈克尔-乔丹 | 13|
+|勒布朗-詹姆斯 | 12|
+
+##球队前十
+|球队|球员入选次数|
+|----|----|
+|波士顿凯尔特人 | 13|
+|洛杉矶湖人 | 97|
+|纽约尼克斯 | 90|
+|底特律活塞 | 85|
+|费城76人 | 66|
+|菲尼克斯太阳 | 60|
+|圣安东尼奥马刺 | 53|
+|芝加哥公牛 | 50|
+|西雅图超音速 | 49|
+|亚特兰大老鹰 | 49|
+
+  [1]: https://www.zhihu.com/question/49952469

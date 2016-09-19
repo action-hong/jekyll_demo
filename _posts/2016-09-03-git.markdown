@@ -93,6 +93,7 @@ HEAD is now at 7923836 append GPL
 
 >又如果说在dev分支时,修改内容,但没有进行commit,返回分支master,则之前修改的内容还存在,可能是因为这坨修改的东西如果没有commit个某个分支的话,所有分支都看得到,而commit之后,这个修改的内容就属于某个分支了,其他的都看不到了
 
+>进入哪个提交的编辑器是 可以按ESC 在按`:wq`退出
 ### 解决冲突
 master分支在第一行修改东西,commit
 featurel分支也在第一行修改东西,commit
