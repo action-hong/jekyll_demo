@@ -37,27 +37,31 @@ def url2soup(url):
 	req.encoding = 'utf-8'
 	return BeautifulSoup(req.text,"html5lib")
 
-all_star_dict = {}						# 字典,url->人名
-all_star = defaultdict(lambda:0)		# 个人参与全明星的次数
-all_star_team = defaultdict(lambda:0)	# 球队球员参与全明星的人次
-count = 0								# 历史上球员参与全明星的人次
+# 字典,url->人名
+all_star_dict = {}		
+# 个人参与全明星的次数				
+all_star = defaultdict(lambda:0)	
+# 球队球员参与全明星的人次	
+all_star_team = defaultdict(lambda:0)
+# 历史上球员参与全明星的人次	
+count = 0								
 
 # 个人入选的次数(不计入选但因伤病没参加的次数,因为这个数据库也没有这数据)
 for year in range(1950, 1951):
 	print('-'*20,year,'-'*20)
 	# time.sleep(1)
 
-	url = "http://www.stat-nba.com/award/item12isnba1season{}.html".format(
-        year)
+	url = "http://www.stat-nba.com/award/item12isnba1season{}.html".format(year)
 
 	doc = url2soup(url)
 
-	names = doc.findAll("td",{"class":"player_name_out"})   # 找出球员名单
+	# 找出球员名单
+	names = doc.findAll("td",{"class":"player_name_out"})   
 
 	for name in names:
 		name_url = name.find('a').attrs['href']
 		all_star_dict[name_url] = name.text
-		all_star[name_url] = all_star[name_url] + 1		# 由于mvp会加星星,需要去掉,麻烦
+		all_star[name_url] = all_star[name_url] + 1	
 
 	count = count + len(names)
 
@@ -72,6 +76,7 @@ for url in all_star_dict.keys():
 
 	doc = BeautifulSoup(req.text,"html5lib")
 
+	# 参与全明星的列表
 	lists = doc.find_all('td',class_='tm',rank=True)
 
 	for team in lists:
@@ -98,31 +103,33 @@ print(count)
 ```
 
 ##个人前十
+
 |球员|个人入选次数|
-|----|----|
-|卡里姆-贾巴尔 | 18|
-|蒂姆-邓肯 | 15|
-|科比-布莱恩特 | 15|
-|凯文-加内特 | 14|
-|威尔特-张伯伦 | 13|
-|鲍勃-库西 | 13|
-|约翰-哈福利切克 | 13|
-|德克-诺维茨基 | 13|
-|迈克尔-乔丹 | 13|
-|勒布朗-詹姆斯 | 12|
+|----|------------|
+|卡里姆-贾巴尔|18|
+|蒂姆-邓肯|15|
+|科比-布莱恩特|15|
+|凯文-加内特 |14|
+|威尔特-张伯伦|13|
+|鲍勃-库西|13|
+|约翰-哈福利切克|13|
+|德克-诺维茨基|13|
+|迈克尔-乔丹|13|
+|勒布朗-詹姆斯|12|
 
 ##球队前十
+
 |球队|球员入选次数|
-|----|----|
-|波士顿凯尔特人 | 13|
-|洛杉矶湖人 | 97|
-|纽约尼克斯 | 90|
-|底特律活塞 | 85|
-|费城76人 | 66|
-|菲尼克斯太阳 | 60|
-|圣安东尼奥马刺 | 53|
-|芝加哥公牛 | 50|
-|西雅图超音速 | 49|
-|亚特兰大老鹰 | 49|
+|----|------------|
+|波士顿凯尔特人|13|
+|洛杉矶湖人|97|
+|纽约尼克斯|90|
+|底特律活塞|85|
+|费城76人|66|
+|菲尼克斯太阳|60|
+|圣安东尼奥马刺|53|
+|芝加哥公牛|50|
+|西雅图超音速|49|
+|亚特兰大老鹰|49|
 
   [1]: https://www.zhihu.com/question/49952469
