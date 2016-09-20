@@ -46,7 +46,7 @@ all_star_team = defaultdict(lambda:0)
 count = 0								
 
 # 个人入选的次数(不计入选但因伤病没参加的次数,因为这个数据库也没有这数据)
-for year in range(1950, 1951):
+for year in range(1950, 2016):
 	print('-'*20,year,'-'*20)
 	# time.sleep(1)
 
@@ -70,10 +70,8 @@ for year in range(1950, 1951):
 for url in all_star_dict.keys():
 	print('球员:%s' % all_star_dict[url])
 	url = "http://www.stat-nba.com/player/stat_box/{}_allstar.html".format(url.split('/')[-1][:-5])
-	req = requests.get(url)
-	req.encoding = 'utf-8'
 
-	doc = BeautifulSoup(req.text,"html5lib")
+	doc = url2soup(url)
 
 	# 参与全明星的列表
 	lists = doc.find_all('td',class_='tm',rank=True)
@@ -81,7 +79,6 @@ for url in all_star_dict.keys():
 	for team in lists:
 		all_star_team[team.text] = all_star_team[team.text] + 1
 
-	count_1 = count_1 + len(lists)
 
 player_count = dic2sortlist(all_star)
 team_count = dic2sortlist(all_star_team)
