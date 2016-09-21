@@ -107,15 +107,14 @@ Map([<Rule '/kkopite' (HEAD, GET, OPTIONS) -> get_some>,
 ```
 `app.py`
 def run(self, host=None, port=None, debug=None, **options):
-    ...
+    #省略
     from werkzeug.serving import run_simple
     # 即把自身当做一个wsgi应用传入
     run_simple(host, port, self, **options) 
-    ...
+    
     
 # app实现wsgi的接口
 def __call__(self, environ, start_response):
-    """Shortcut for :attr:`wsgi_app`."""
     return self.wsgi_app(environ, start_response)
     
 def wsgi_app(self, environ, start_response):
@@ -137,7 +136,6 @@ def wsgi_app(self, environ, start_response):
 
 # 获取response
 def full_dispatch_request(self):
-
     self.try_trigger_before_first_request_functions()   # 请求前执行函数(自己需求的话添加)
     try:
         request_started.send(self)
@@ -151,9 +149,8 @@ def full_dispatch_request(self):
     request_finished.send(self, response=response)
     return response
     
- def dispatch_request(self):
- # 取出之前push进去的ResponseContext对象(wsgi_app方法中)的request,里面关联了endpoint和args
-
+def dispatch_request(self):
+    # 取出之前push进去的ResponseContext对象(wsgi_app方法中)的request,里面关联了endpoint和args
     req = _request_ctx_stack.top.request    
     
     if req.routing_exception is not None:
@@ -173,7 +170,7 @@ def full_dispatch_request(self):
 
 ```
 
-##总结
+## 总结
 基本上大致流程就是这样了:
 1. @app.route修饰器将指定的`url,denpoint,view_func`通过`Rule`,关联起来,其中`Rule`对象存放一组`url`,`methods`,`endpoint`的信息,放在url_map里面,然后`endpoint`和`view_func`组成映射关系存入view_fuctions中
 2. app自己实现wsgi接口,将获取的environ作为参数实例一个RequestContext对象放到`_request_ctx_stack`
