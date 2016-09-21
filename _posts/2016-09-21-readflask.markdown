@@ -57,7 +57,7 @@ def add_url_rule(self, rule, endpoint=None, view_func=None, **options):
 
         # 中间一串是对methods的处理,写得太清楚了
         # provide_automatic_options先从`view_func`中的attr取,没有的话在去看methods,methods如果有`OPTIONS`就为False,否则为True
-        ...
+        
         
         rule = self.url_rule_class(rule, methods=methods, **options)
         rule.provide_automatic_options = provide_automatic_options
@@ -77,6 +77,7 @@ def add_url_rule(self, rule, endpoint=None, view_func=None, **options):
 而view_functions是关于endpoint和url的映射关系
 
 下面一串代码来瞧瞧url_map和view_functions
+
 ```
 from flask import Flask
 
@@ -93,13 +94,13 @@ def get_some():
 print(app.url_map)
 print(app.view_functions)
 
+#  url endpoint method 
 Map([<Rule '/kkopite' (HEAD, GET, OPTIONS) -> get_some>,
  <Rule '/' (HEAD, GET, OPTIONS, POST) -> test>,
  <Rule '/static/<filename>' (HEAD, GET, OPTIONS) -> static>])
  
 {'get_some': <function get_some at 0x0000020F5185E2F0>, 'test': <function index at 0x0000020F4F46C9D8>, 'static': <bound method _PackageBoundObject.send_static_file of <Flask 'read_route'>>}
 
-# 确实就是将url,endpoint,view_func关联在一起
 ```
 
 然后再看run方法
