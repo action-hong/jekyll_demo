@@ -100,7 +100,6 @@ Map([<Rule '/kkopite' (HEAD, GET, OPTIONS) -> get_some>,
  <Rule '/static/<filename>' (HEAD, GET, OPTIONS) -> static>])
  
 {'get_some': <function get_some at 0x0000020F5185E2F0>, 'test': <function index at 0x0000020F4F46C9D8>, 'static': <bound method _PackageBoundObject.send_static_file of <Flask 'read_route'>>}
-
 ```
 
 然后再看run方法
@@ -164,7 +163,6 @@ def dispatch_request(self):
     
     # 找出对应的endpoint-->找出对应的view_func--->执行该方法
     return self.view_functions[rule.endpoint](**req.view_args)
-
 ```
 
 ## 总结
