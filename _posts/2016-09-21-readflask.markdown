@@ -1,4 +1,4 @@
-﻿---
+---
 layout:     post
 title:      "flask学习"
 subtitle:   "关于app.route的实现"
