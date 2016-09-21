@@ -47,7 +47,6 @@ app.add_url_rule('/','index',index)
 
 下面看看add_url_url的实现
 ```
-@setupmethod
 def add_url_rule(self, rule, endpoint=None, view_func=None, **options):
         if endpoint is None:
             # endpoint为空的话,就endpoint = view_func.__name___
@@ -73,6 +72,7 @@ def add_url_rule(self, rule, endpoint=None, view_func=None, **options):
         # 上面的代码看可以发现内部是通过endpoint映射view_func,
         # 即view_functions里面存放了endpoint->view_func的映射
 ```
+
 可以看到url_map是关于endpoint和url的映射关系(怎么个关系还得看Rule的代码哈)
 而view_functions是关于endpoint和url的映射关系
 
@@ -111,7 +111,6 @@ def run(self, host=None, port=None, debug=None, **options):
     # 即把自身当做一个wsgi应用传入
     run_simple(host, port, self, **options) 
     
-    
 # app实现wsgi的接口
 def __call__(self, environ, start_response):
     return self.wsgi_app(environ, start_response)
@@ -131,7 +130,6 @@ def wsgi_app(self, environ, start_response):
         if self.should_ignore_error(error):
             error = None
         ctx.auto_pop(error)
-
 
 # 获取response
 def full_dispatch_request(self):
