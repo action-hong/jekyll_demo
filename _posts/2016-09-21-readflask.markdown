@@ -105,7 +105,6 @@ Map([<Rule '/kkopite' (HEAD, GET, OPTIONS) -> get_some>,
 
 然后再看run方法
 ```
-`app.py`
 def run(self, host=None, port=None, debug=None, **options):
     #省略
     from werkzeug.serving import run_simple
